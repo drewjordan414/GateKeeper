@@ -50,8 +50,6 @@ def login_user():
 
 # Main function
 def main():
-    # Prompt the user to register or login
-    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
@@ -64,37 +62,39 @@ def main():
 
     # Menu
     while True:
-        print("1. Add a password")
-        print("2. View passwords")
-        print("3. Delete a password")
-        print("4. View all passwords")
+        print("1. Add an Account")
+        print("2. View accounts")
+        print("3. Delete an account")
+        print("4. View all accounts")
         print("5. Logout")
         choice = input("Enter your choice: ")
         
         if choice == "1":
-            # Add a password
-            name = input("Enter the name of the password: ")
+            # Add account
+            name = input("Enter the name of the account: ")
+            email = input("Enter the email of the account: ")
             password = input("Enter the password: ")
-            passwords_collection.insert_one({"name": name, "password": hashed})
-            print("Password added successfully.")
+            hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            passwords_collection.insert_one({"name": name, "email": email, "password": hashed})
+            print("Account added successfully.")
         elif choice == "2":
-            # View a password
-            name = input("Enter the name of the password: ")
-            password = passwords_collection.find_one({"name": name})
-            if password:
-                print(f"Password: {password['password']}")
+            # View account
+            name = input("Enter the name of the account: ")
+            account = passwords_collection.find_one({"name": name})
+            if account:
+                print(f"Email: {account['email']}, Password: {account['password']}")
             else:
-                print("Password not found.")
+                print("Account not found.")
         elif choice == "3":
-            # Delete a password
-            name = input("Enter the name of the password: ")
+            # Delete account
+            name = input("Enter the name of the account: ")
             passwords_collection.delete_one({"name": name})
-            print("Password deleted successfully.")
+            print("Account deleted successfully!")
         elif choice == "4":
-            # View all passwords
-            passwords = passwords_collection.find()
-            for password in passwords:
-                print(f"Name: {password['name']}, Password: {password['password']}")
+            # View all accounts
+            accounts = passwords_collection.find()
+            for account in accounts:
+                print(f"Name: {account['name']}, Email: {account['email']}, Password: {account['password']}")
         elif choice == "5":
             # Logout
             break
