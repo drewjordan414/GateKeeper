@@ -51,6 +51,7 @@ def login_user():
 # Main function
 def main():
     # Prompt the user to register or login
+    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
@@ -69,12 +70,12 @@ def main():
         print("4. View all passwords")
         print("5. Logout")
         choice = input("Enter your choice: ")
-
+        
         if choice == "1":
             # Add a password
             name = input("Enter the name of the password: ")
             password = input("Enter the password: ")
-            passwords_collection.insert_one({"name": name, "password": password})
+            passwords_collection.insert_one({"name": name, "password": hashed})
             print("Password added successfully.")
         elif choice == "2":
             # View a password
