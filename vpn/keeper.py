@@ -1,6 +1,7 @@
 import dotenv
 import bcrypt
 import pymongo
+import getpass
 from os import getenv
 
 # Load environment variables
@@ -19,7 +20,7 @@ passwords_collection = db[PASSWORDS_COLLECTION]
 # User Registration
 def register_user():
     username = input("Enter a new username: ")
-    password = input("Enter a new password: ")
+    password = getpass.getpass("Enter a new password: ")
 
     # Check if the username already exists
     if accounts_collection.find_one({"username": username}):
@@ -36,7 +37,7 @@ def register_user():
 # User Login
 def login_user():
     username = input("Enter your username: ")
-    password = input("Enter your password: ")
+    password = getpass.getpass("Enter your password: ")
 
     # Find the user in the database
     user = accounts_collection.find_one({"username": username})
