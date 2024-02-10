@@ -1,6 +1,7 @@
 import dotenv
 import bcrypt
 import pymongo
+import getpass
 from os import getenv
 
 # Load environment variables
@@ -19,7 +20,7 @@ passwords_collection = db[PASSWORDS_COLLECTION]
 # User Registration
 def register_user():
     username = input("Enter a new username: ")
-    password = input("Enter a new password: ")
+    password = getpass.getpass("Enter a new password: ")
 
     # Check if the username already exists
     if accounts_collection.find_one({"username": username}):
@@ -36,7 +37,7 @@ def register_user():
 # User Login
 def login_user():
     username = input("Enter your username: ")
-    password = input("Enter your password: ")
+    password = getpass.getpass("Enter your password: ")
 
     # Find the user in the database
     user = accounts_collection.find_one({"username": username})
@@ -50,9 +51,6 @@ def login_user():
 
 # Main function
 def main():
-    # Prompt the user to register or login
-    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    deshashed = bcrypt.checkpw(password.encode('utf-8'), hashed)
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
@@ -77,14 +75,15 @@ def main():
             name = input("Enter the name of the account: ")
             email = input("Enter the email of the account: ")
             password = input("Enter the password: ")
-            passwords_collection.insert_one({"name": name, "email": email ,"password": hashed})
-            print("Password added successfully.")
+            hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            passwords_collection.insert_one({"name": name, "email": email, "password": hashed})
+            print("Account added successfully.")
         elif choice == "2":
             # View account
             name = input("Enter the name of the account: ")
-            password = passwords_collection.find_one({"name": name})
-            if name:
-                print(f"Email: {email['email']}, Password: {password['password']}")
+            account = passwords_collection.find_one({"name": name})
+            if account:
+                print(f"Email: {account['email']}, Password: {account['password']}")
             else:
                 print("Account not found.")
         elif choice == "3":
@@ -94,9 +93,9 @@ def main():
             print("Account deleted successfully!")
         elif choice == "4":
             # View all accounts
-            passwords = passwords_collection.find()
-            for password in passwords:
-                print(f"Name: {password['name']}, Password: {password['password']}")
+            accounts = passwords_collection.find()
+            for account in accounts:
+                print(f"Name: {account['name']}, Email: {account['email']}, Password: {account['password']}")
         elif choice == "5":
             # Logout
             break
