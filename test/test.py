@@ -17,18 +17,31 @@ dotenv.load_dotenv()
 current_user_accounts_collection = None
 
 
+# def db_connection():
+#     # Database connection
+#     MONGO_URL = getenv("MONGO_URL")
+#     ACCOUNTS_COLLECTION = getenv("ACCOUNTS_COLLECTION")
+#     PASSWORDS_COLLECTION = getenv("PASSWORDS_COLLECTION")
+
+#     client = pymongo.MongoClient(MONGO_URL)
+#     db = client["GateKeeper"]
+#     accounts_collection = db[ACCOUNTS_COLLECTION]
+#     passwords_collection = db[PASSWORDS_COLLECTION]
+
+#     return accounts_collection, passwords_collection
 def db_connection():
     # Database connection
     MONGO_URL = getenv("MONGO_URL")
-    ACCOUNTS_COLLECTION = getenv("ACCOUNTS_COLLECTION")
-    PASSWORDS_COLLECTION = getenv("PASSWORDS_COLLECTION")
 
     client = pymongo.MongoClient(MONGO_URL)
     db = client["GateKeeper"]
+
+    ACCOUNTS_COLLECTION = getenv("ACCOUNTS_COLLECTION")
+    PASSWORDS_COLLECTION = getenv("PASSWORDS_COLLECTION")
     accounts_collection = db[ACCOUNTS_COLLECTION]
     passwords_collection = db[PASSWORDS_COLLECTION]
 
-    return accounts_collection, passwords_collection
+    return db, accounts_collection, passwords_collection
 
 #show database connection
 # def show_db_connection():
@@ -113,6 +126,8 @@ def print_calling_card():
 
 # User Registration
 def register_user():
+    db, accounts_collection, _ = db_connection()  # Retrieve the database and accounts collection
+
     username = input("Enter a new username: ")
     secret_key = getpass.getpass("Enter your secret key: ")
     password = getpass.getpass("Enter a new password: ")
@@ -127,13 +142,12 @@ def register_user():
     hashed_secret_key = bcrypt.hashpw(secret_key.encode('utf-8'), bcrypt.gensalt())
 
     # Store the new user with hashed secret key
-    # accounts_collection.insert_one({"username": username, "password": hashed_password, "secret_key": hashed_secret_key})
-    # print("User registered successfully.")
-    db = db_connection()
     accounts_collection.insert_one({"username": username, "password": hashed_password, "secret_key": hashed_secret_key})
+    
     # Create a new collection for user's accounts
     db.create_collection(f"{username}_accounts")
     print("User registered successfully.")
+
 
 # User Login
 # def login_user():
