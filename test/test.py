@@ -4,6 +4,10 @@ import pymongo
 import getpass
 from cryptography.fernet import Fernet
 from os import getenv
+from prettytable import PrettyTable
+from pyfiglet import Figlet
+import time
+import sys
 
 # Load environment variables
 dotenv.load_dotenv()
@@ -25,6 +29,39 @@ def encrypt_password(password: str, key: bytes) -> str:
 def decrypt_password(encrypted_password: str, key: bytes) -> str:
     cipher_suite = Fernet(key)
     return cipher_suite.decrypt(encrypted_password.encode()).decode()
+
+# Make er Perty
+def animated_ascii_art(text, delay=0.006):
+    f = Figlet(font='slant')
+    result = f.renderText(text)
+    for char in result:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(delay)
+
+def display_table(data, fields):
+    table = PrettyTable()
+    table.field_names = fields
+    for row in data:
+        table.add_row(row)
+    print(table)
+
+
+def print_calling_card():
+    ascii_drawing = (
+        "|-------------------------|\n"
+        "|                   __    |\n"
+        "|        .,-;-;-,. /'_\   |\n"
+        "|      _/_/_/_|_\_\) /    |\n"
+        "|    '-<_><_><_><_>=/\    |\n"
+        "|      `/_/====/_/-'\_\   |\n"
+        "|       ""     ""    ""   | \n"
+        "| github.com/drewjordan414|\n"
+        "|-------------------------|\n"
+
+    )
+    print(print_calling_card)
+
 
 # User Registration
 def register_user():
@@ -60,6 +97,8 @@ def login_user():
 
 # Main function
 def main():
+    animated_ascii_art('GateKeeper')
+    print_calling_card()
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
@@ -89,15 +128,20 @@ def main():
             encrypted_password = encrypt_password(password, account_key)
             passwords_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
             print("Account added successfully.")
+        
         elif choice == "2":
             # View account
-            name = input("Enter the name of the account: ")
-            account = passwords_collection.find_one({"name": name})
+            name = input("Enter the name of the account: ").lower()  # Convert input to lowercase
+            # Find account using a case-insensitive search
+            account = passwords_collection.find_one({"name": {"$regex": f"^{name}$", "$options": "i"}})
             if account:
                 decrypted_password = decrypt_password(account['password'], account['key'])
-                print(f"Email: {account['email']}, Password: {decrypted_password}")
+                # Displaying the result in a table
+                account_data = [[account['name'], account['email'], decrypted_password]]
+                display_table(account_data, ["Name", "Email", "Password"])
             else:
                 print("Account not found.")
+
         elif choice == "3":
             # Delete account
             name = input("Enter the name of the account: ")
@@ -106,9 +150,12 @@ def main():
         elif choice == "4":
             # View all accounts
             accounts = passwords_collection.find()
+            account_data = []
             for account in accounts:
                 decrypted_password = decrypt_password(account['password'], account['key'])
-                print(f"Name: {account['name']}, Email: {account['email']}, Password: {decrypted_password}")
+                account_data.append([account['name'], account['email'], decrypted_password])  # Add a list for each account
+            display_table(account_data, ["Name", "Email", "Password"])
+
         elif choice == "5":
             # Logout
             break
