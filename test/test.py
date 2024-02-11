@@ -31,7 +31,7 @@ def decrypt_password(encrypted_password: str, key: bytes) -> str:
     return cipher_suite.decrypt(encrypted_password.encode()).decode()
 
 # Make er Perty
-def animated_ascii_art(text, delay=0.06):
+def animated_ascii_art(text, delay=0.006):
     f = Figlet(font='slant')
     result = f.renderText(text)
     for char in result:
@@ -111,15 +111,20 @@ def main():
             encrypted_password = encrypt_password(password, account_key)
             passwords_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
             print("Account added successfully.")
+        
         elif choice == "2":
             # View account
-            name = input("Enter the name of the account: ")
-            account = passwords_collection.find_one({"name": name})
+            name = input("Enter the name of the account: ").lower()  # Convert input to lowercase
+            # Find account using a case-insensitive search
+            account = passwords_collection.find_one({"name": {"$regex": f"^{name}$", "$options": "i"}})
             if account:
                 decrypted_password = decrypt_password(account['password'], account['key'])
-                print(f"Email: {account['email']}, Password: {decrypted_password}")
+                # Displaying the result in a table
+                account_data = [[account['name'], account['email'], decrypted_password]]
+                display_table(account_data, ["Name", "Email", "Password"])
             else:
                 print("Account not found.")
+
         elif choice == "3":
             # Delete account
             name = input("Enter the name of the account: ")
