@@ -4,6 +4,10 @@ import pymongo
 import getpass
 from cryptography.fernet import Fernet
 from os import getenv
+from prettytable import PrettyTable
+from pyfiglet import Figlet
+import time
+import sys
 
 # Load environment variables
 dotenv.load_dotenv()
@@ -25,6 +29,23 @@ def encrypt_password(password: str, key: bytes) -> str:
 def decrypt_password(encrypted_password: str, key: bytes) -> str:
     cipher_suite = Fernet(key)
     return cipher_suite.decrypt(encrypted_password.encode()).decode()
+
+# Make er Perty
+def animated_ascii_art(text, delay=0.1):
+    f = Figlet(font='slant')
+    result = f.renderText(text)
+    for char in result:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(delay)
+
+def display_table(data, fields):
+    table = PrettyTable()
+    table.field_names = fields
+    for row in data:
+        table.add_row(row)
+    print(table)
+
 
 # User Registration
 def register_user():
@@ -60,6 +81,7 @@ def login_user():
 
 # Main function
 def main():
+    animated_ascii_art('GateKeeper')
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
@@ -109,6 +131,7 @@ def main():
             for account in accounts:
                 decrypted_password = decrypt_password(account['password'], account['key'])
                 print(f"Name: {account['name']}, Email: {account['email']}, Password: {decrypted_password}")
+                display_table([account], ["Name", "Email", "Password"])
         elif choice == "5":
             # Logout
             break
