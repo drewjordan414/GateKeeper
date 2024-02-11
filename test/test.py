@@ -128,10 +128,12 @@ def main():
         elif choice == "4":
             # View all accounts
             accounts = passwords_collection.find()
+            account_data = []
             for account in accounts:
                 decrypted_password = decrypt_password(account['password'], account['key'])
-                print(f"Name: {account['name']}, Email: {account['email']}, Password: {decrypted_password}")
-                display_table([account], ["Name", "Email", "Password"])
+                account_data.append([account['name'], account['email'], decrypted_password])  # Add a list for each account
+            display_table(account_data, ["Name", "Email", "Password"])
+
         elif choice == "5":
             # Logout
             break
