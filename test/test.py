@@ -143,7 +143,6 @@ def main():
     show_connection()
     print_ascii_frame()
     print_calling_card()
-    show_db_connection()
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
