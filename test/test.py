@@ -110,15 +110,10 @@ def print_calling_card():
 # User Registration
 def register_user():
     username = input("Enter a new username: ")
+    key = getpass.getpass("Enter your secret key: ")
     password = getpass.getpass("Enter a new password: ")
-    key = input("Enter your secret key: ")
     key_collection = accounts_collection.find_one({"key": key})
-    if key_collection:
-        print("Key is valid")
-        return True
-    else:
-        print("Invalid key")
-        return False
+    
     # Check if the username already exists
     if accounts_collection.find_one({"username": username}):
         print("Username already exists. Please choose a different username.")
@@ -130,6 +125,13 @@ def register_user():
     # Store the new user
     accounts_collection.insert_one({"username": username, "password": hashed})
     print("User registered successfully.")
+
+    if key_collection:
+        print("Key is valid")
+        return True
+    else:
+        print("Invalid key")
+        return False
 
 # User Login
 def login_user():
