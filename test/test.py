@@ -8,6 +8,7 @@ from prettytable import PrettyTable
 from pyfiglet import Figlet
 import time
 import sys
+import time
 
 # Load environment variables
 dotenv.load_dotenv()
@@ -26,11 +27,11 @@ def db_connection():
     return accounts_collection, passwords_collection
 
 #show database connection
-def show_db_connection():
-    if db_connection() == True:
-        print("Database connected successfully")
-    else:
-        print("Database connection failed")
+# def show_db_connection():
+#     if db_connection() == True:
+#         print("Database connected successfully")
+#     else:
+#         print("Database connection failed")
 
 
 # # Database connection
@@ -70,8 +71,12 @@ def display_table(data, fields):
 accounts_collection, passwords_collection = db_connection()
 
 def show_connection():
-    animated = animated_ascii_art("....")
-    print("Conecting to the database" + animated)
+    print("Connecting to the database", end="")
+    for _ in range(5):  # You can adjust the number of dots here
+        sys.stdout.write(".")
+        sys.stdout.flush()
+        time.sleep(0.6)  # Adjust this for timing between dots (total of 3 seconds delay)
+    print("Connected to database successfully.")  # Move t
 
 def print_ascii_frame():
     ascii_art = """
