@@ -2,6 +2,7 @@ import dotenv
 import bcrypt
 import pymongo
 import getpass
+from cryptography.fernet import Fernet
 from os import getenv
 
 # Load environment variables
@@ -16,6 +17,14 @@ client = pymongo.MongoClient(MONGO_URL)
 db = client["GateKeeper"]
 accounts_collection = db[ACCOUNTS_COLLECTION]
 passwords_collection = db[PASSWORDS_COLLECTION]
+
+def encrypt_password(password: str, key: bytes) -> str:
+    cipher_suite = Fernet(key)
+    return cipher_suite.encrypt(password.encode()).decode()
+
+def decrypt_password(encrypted_password: str, key: bytes) -> str:
+    cipher_suite = Fernet(key)
+    return cipher_suite.decrypt(encrypted_password.encode()).decode()
 
 # User Registration
 def register_user():
@@ -61,7 +70,7 @@ def main():
         else:
             print("Invalid choice. Please try again.")
 
-    # Menu
+    # Menu for account management
     while True:
         print("1. Add an Account")
         print("2. View accounts")
@@ -75,15 +84,18 @@ def main():
             name = input("Enter the name of the account: ")
             email = input("Enter the email of the account: ")
             password = input("Enter the password: ")
-            hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            passwords_collection.insert_one({"name": name, "email": email, "password": hashed})
+            # Generate a unique key for this account
+            account_key = Fernet.generate_key()
+            encrypted_password = encrypt_password(password, account_key)
+            passwords_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
             print("Account added successfully.")
         elif choice == "2":
             # View account
             name = input("Enter the name of the account: ")
             account = passwords_collection.find_one({"name": name})
             if account:
-                print(f"Email: {account['email']}, Password: {account['password']}")
+                decrypted_password = decrypt_password(account['password'], account['key'])
+                print(f"Email: {account['email']}, Password: {decrypted_password}")
             else:
                 print("Account not found.")
         elif choice == "3":
@@ -95,7 +107,8 @@ def main():
             # View all accounts
             accounts = passwords_collection.find()
             for account in accounts:
-                print(f"Name: {account['name']}, Email: {account['email']}, Password: {account['password']}")
+                decrypted_password = decrypt_password(account['password'], account['key'])
+                print(f"Name: {account['name']}, Email: {account['email']}, Password: {decrypted_password}")
         elif choice == "5":
             # Logout
             break
