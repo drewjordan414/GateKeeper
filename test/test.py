@@ -246,12 +246,15 @@ def main():
     # else:
     #     print("Invalid choice. Please try again.")
     while True:
-        choice = input("Enter 1 to register, 2 to login: ")
+        choice = input("Enter 1 to register, 2 to login or 3 to view accounts: ")
         if choice == "1":
             register_user()
+            add_account()
         elif choice == "2":
             if login_user():
                 break
+        elif choice == "3":
+            view_accounts()
         else:
             print("Invalid choice. Please try again.")
 
