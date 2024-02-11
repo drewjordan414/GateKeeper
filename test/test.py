@@ -144,7 +144,7 @@ def main():
     show_connection()
     print_ascii_frame()
     print_calling_card()
-    choice = input("Press 2 ro login: ")
+    choice = input("Press 2 to login: ")
     if choice == "2":
         if login_user():
             print("Login successful.")
