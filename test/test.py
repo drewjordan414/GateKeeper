@@ -67,8 +67,8 @@ def display_table(data, fields):
         table.add_row(row)
     print(table)
 
-accounts_collection = db_connection()
-passwords_collection = db_connection()
+accounts_collection, passwords_collection = db_connection()
+
 
 def print_calling_card():
     turtle = (
