@@ -12,15 +12,36 @@ import sys
 # Load environment variables
 dotenv.load_dotenv()
 
-# Database connection
-MONGO_URL = getenv("MONGO_URL")
-ACCOUNTS_COLLECTION = getenv("ACCOUNTS_COLLECTION")
-PASSWORDS_COLLECTION = getenv("PASSWORDS_COLLECTION")
+def db_connection():
+    # Database connection
+    MONGO_URL = getenv("MONGO_URL")
+    ACCOUNTS_COLLECTION = getenv("ACCOUNTS_COLLECTION")
+    PASSWORDS_COLLECTION = getenv("PASSWORDS_COLLECTION")
 
-client = pymongo.MongoClient(MONGO_URL)
-db = client["GateKeeper"]
-accounts_collection = db[ACCOUNTS_COLLECTION]
-passwords_collection = db[PASSWORDS_COLLECTION]
+    client = pymongo.MongoClient(MONGO_URL)
+    db = client["GateKeeper"]
+    accounts_collection = db[ACCOUNTS_COLLECTION]
+    passwords_collection = db[PASSWORDS_COLLECTION]
+
+    return accounts_collection, passwords_collection
+
+#show database connection
+def show_db_connection():
+    if db_connection() == True:
+        print("Database connected successfully")
+    else:
+        print("Database connection failed")
+
+
+# # Database connection
+# MONGO_URL = getenv("MONGO_URL")
+# ACCOUNTS_COLLECTION = getenv("ACCOUNTS_COLLECTION")
+# PASSWORDS_COLLECTION = getenv("PASSWORDS_COLLECTION")
+
+# client = pymongo.MongoClient(MONGO_URL)
+# db = client["GateKeeper"]
+# accounts_collection = db[ACCOUNTS_COLLECTION]
+# passwords_collection = db[PASSWORDS_COLLECTION]
 
 def encrypt_password(password: str, key: bytes) -> str:
     cipher_suite = Fernet(key)
@@ -69,7 +90,7 @@ def register_user():
     password = getpass.getpass("Enter a new password: ")
 
     # Check if the username already exists
-    if accounts_collection.find_one({"username": username}):
+    if db_connection.accounts_collection.find_one({"username": username}):
         print("Username already exists. Please choose a different username.")
         return
 
@@ -77,7 +98,7 @@ def register_user():
     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     # Store the new user
-    accounts_collection.insert_one({"username": username, "password": hashed})
+    db_connection.accounts_collection.insert_one({"username": username, "password": hashed})
     print("User registered successfully.")
 
 # User Login
@@ -86,7 +107,7 @@ def login_user():
     password = getpass.getpass("Enter your password: ")
 
     # Find the user in the database
-    user = accounts_collection.find_one({"username": username})
+    user = db_connection.accounts_collection.find_one({"username": username})
 
     if user and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
         print("Login successful.")
@@ -99,6 +120,7 @@ def login_user():
 def main():
     animated_ascii_art('GateKeeper')
     print_calling_card()
+    show_db_connection()
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
@@ -126,14 +148,14 @@ def main():
             # Generate a unique key for this account
             account_key = Fernet.generate_key()
             encrypted_password = encrypt_password(password, account_key)
-            passwords_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
+            db_connection.passwords_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
             print("Account added successfully.")
         
         elif choice == "2":
             # View account
             name = input("Enter the name of the account: ").lower()  # Convert input to lowercase
             # Find account using a case-insensitive search
-            account = passwords_collection.find_one({"name": {"$regex": f"^{name}$", "$options": "i"}})
+            account = db_connection.passwords_collection.find_one({"name": {"$regex": f"^{name}$", "$options": "i"}})
             if account:
                 decrypted_password = decrypt_password(account['password'], account['key'])
                 # Displaying the result in a table
@@ -145,11 +167,11 @@ def main():
         elif choice == "3":
             # Delete account
             name = input("Enter the name of the account: ")
-            passwords_collection.delete_one({"name": name})
+            db_connection.passwords_collection.delete_one({"name": name})
             print("Account deleted successfully!")
         elif choice == "4":
             # View all accounts
-            accounts = passwords_collection.find()
+            accounts = db_connection.passwords_collection.find()
             account_data = []
             for account in accounts:
                 decrypted_password = decrypt_password(account['password'], account['key'])
