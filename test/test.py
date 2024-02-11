@@ -13,6 +13,10 @@ import time
 # Load environment variables
 dotenv.load_dotenv()
 
+# global variables
+current_user_accounts_collection = None
+
+
 def db_connection():
     # Database connection
     MONGO_URL = getenv("MONGO_URL")
@@ -123,7 +127,12 @@ def register_user():
     hashed_secret_key = bcrypt.hashpw(secret_key.encode('utf-8'), bcrypt.gensalt())
 
     # Store the new user with hashed secret key
+    # accounts_collection.insert_one({"username": username, "password": hashed_password, "secret_key": hashed_secret_key})
+    # print("User registered successfully.")
+    db = db_connection()
     accounts_collection.insert_one({"username": username, "password": hashed_password, "secret_key": hashed_secret_key})
+    # Create a new collection for user's accounts
+    db.create_collection(f"{username}_accounts")
     print("User registered successfully.")
 
 # User Login
@@ -141,7 +150,30 @@ def register_user():
 #     else:
 #         print("Invalid username, secret key, or password.")
 #         return False
+# def login_user():
+#     global current_user_accounts_collection
+#     username = input("Enter your username: ")
+#     secret_key = getpass.getpass("Enter your secret key: ")
+#     password = getpass.getpass("Enter your password: ")
+
+#     # Find the user in the database
+#     user = accounts_collection.find_one({"username": username})
+
+#     if user:
+#         # Check if secret_key field exists
+#         user_secret_key = user.get("secret_key")
+#         if user_secret_key and bcrypt.checkpw(secret_key.encode('utf-8'), user_secret_key) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
+#             print("Login successful.")
+#             return True
+#         else:
+#             print("Invalid username, secret key, or password.")
+#             return False
+#     else:
+#         print("User not found.")
+#         return False
 def login_user():
+    global current_user_accounts_collection  # Declare the global variable
+    db = db_connection()
     username = input("Enter your username: ")
     secret_key = getpass.getpass("Enter your secret key: ")
     password = getpass.getpass("Enter your password: ")
@@ -154,6 +186,9 @@ def login_user():
         user_secret_key = user.get("secret_key")
         if user_secret_key and bcrypt.checkpw(secret_key.encode('utf-8'), user_secret_key) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
             print("Login successful.")
+            
+            # Set the current user's accounts collection
+            current_user_accounts_collection = db[f"{username}_accounts"]
             return True
         else:
             print("Invalid username, secret key, or password.")
@@ -162,6 +197,39 @@ def login_user():
         print("User not found.")
         return False
     
+def add_account():
+    if current_user_accounts_collection is None:
+        print("You must be logged in to add an account.")
+        return
+
+    name = input("Enter the name of the account: ")
+    email = input("Enter the email of the account: ")
+    password = input("Enter the password: ")
+
+    # Generate a unique key for this account
+    account_key = Fernet.generate_key()
+    encrypted_password = encrypt_password(password, account_key)
+
+    # Insert the account into the current user's accounts collection
+    current_user_accounts_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
+    print("Account added successfully.")
+
+def view_accounts():
+    if current_user_accounts_collection is None:
+        print("You must be logged in to view accounts.")
+        return
+
+    accounts = current_user_accounts_collection.find()
+    account_data = []
+    for account in accounts:
+        decrypted_password = decrypt_password(account['password'], account['key'])
+        account_data.append([account['name'], account['email'], decrypted_password])
+
+    if account_data:
+        display_table(account_data, ["Name", "Email", "Password"])
+    else:
+        print("No accounts found.")
+
 # Main function
 def main():
     show_connection()
