@@ -126,27 +126,24 @@ def print_calling_card():
 
 # User Registration
 def register_user():
-    db, accounts_collection, _ = db_connection()  # Retrieve the database and accounts collection
+    db, accounts_collection, _ = db_connection()
 
     username = input("Enter a new username: ")
     secret_key = getpass.getpass("Enter your secret key: ")
     password = getpass.getpass("Enter a new password: ")
 
-    # Check if the username already exists
     if accounts_collection.find_one({"username": username}):
         print("Username already exists. Please choose a different username.")
-        return
+        return False
 
-    # Hash the password and secret key
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     hashed_secret_key = bcrypt.hashpw(secret_key.encode('utf-8'), bcrypt.gensalt())
 
-    # Store the new user with hashed secret key
     accounts_collection.insert_one({"username": username, "password": hashed_password, "secret_key": hashed_secret_key})
-    
-    # Create a new collection for user's accounts
     db.create_collection(f"{username}_accounts")
     print("User registered successfully.")
+    return True
+
 
 
 # User Login
@@ -248,8 +245,9 @@ def main():
     while True:
         choice = input("Enter 1 to register, 2 to login or 3 to view accounts: ")
         if choice == "1":
-            register_user()
-            add_account()
+            if register_user():
+                login_user()  # Auto login after registration
+                add_account()
         elif choice == "2":
             if login_user():
                 break
