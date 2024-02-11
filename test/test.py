@@ -110,49 +110,39 @@ def print_calling_card():
 # User Registration
 def register_user():
     username = input("Enter a new username: ")
-    key = getpass.getpass("Enter your secret key: ")
+    secret_key = getpass.getpass("Enter your secret key: ")
     password = getpass.getpass("Enter a new password: ")
-    key_collection = accounts_collection.find_one({"key": key})
-    
+
     # Check if the username already exists
     if accounts_collection.find_one({"username": username}):
         print("Username already exists. Please choose a different username.")
         return
 
-    # Hash the password
-    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    # Hash the password and secret key
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    hashed_secret_key = bcrypt.hashpw(secret_key.encode('utf-8'), bcrypt.gensalt())
 
-    # Store the new user
-    accounts_collection.insert_one({"username": username, "password": hashed})
+    # Store the new user with hashed secret key
+    accounts_collection.insert_one({"username": username, "password": hashed_password, "secret_key": hashed_secret_key})
     print("User registered successfully.")
-
-    if key_collection:
-        print("Key is valid")
-        return True
-    else:
-        print("Invalid key")
-        return False
 
 # User Login
 def login_user():
     username = input("Enter your username: ")
-    key = getpass.getpass("Enter your secret key: ")
+    secret_key = getpass.getpass("Enter your secret key: ")
     password = getpass.getpass("Enter your password: ")
 
     # Find the user in the database
     user = accounts_collection.find_one({"username": username})
-    key_collection = accounts_collection.find_one({"key": key})
 
-    if user and key_collection and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
+    if user and bcrypt.checkpw(secret_key.encode('utf-8'), user["secret_key"]) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
         print("Login successful.")
         return True
     else:
-        print("Invalid username or password.")
+        print("Invalid username, secret key, or password.")
         return False
-
     
     
-
 # Main function
 def main():
     show_connection()
