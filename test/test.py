@@ -69,6 +69,10 @@ def display_table(data, fields):
 
 accounts_collection, passwords_collection = db_connection()
 
+def show_connection():
+    animated = animated_ascii_art("....")
+    print("Conecting to the database" + animated)
+
 def print_ascii_frame():
     ascii_art = """
     your secrets are safe with
@@ -78,12 +82,8 @@ def print_ascii_frame():
     """
     print(ascii_art)
 
-# To use the function, just call it
-print_ascii_frame()
 
 # To use the function, just call it
-print_ascii_art()
-
 
 def print_calling_card():
     turtle = (
@@ -135,7 +135,8 @@ def login_user():
 
 # Main function
 def main():
-    print_ascii_art()
+    show_connection()
+    print_ascii_frame()
     print_calling_card()
     show_db_connection()
     while True:
