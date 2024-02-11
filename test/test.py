@@ -56,7 +56,7 @@ def print_calling_card():
         "|    '-<_><_><_><_>=/\    |\n"
         "|      `/_/====/_/-'\_\   |\n"
         "|       ""     ""    ""   | \n"
-        "| github.com/drewjordan414|\n"
+        "|github.com/drewjordan414 |\n"
         "|-------------------------|\n"
 
     )
