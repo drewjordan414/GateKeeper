@@ -85,7 +85,7 @@ def display_table(data, fields):
         table.add_row(row)
     print(table)
 
-accounts_collection, passwords_collection = db_connection()
+db, accounts_collection, passwords_collection = db_connection()
 
 def show_connection():
     print("Connecting to the database", end="")
