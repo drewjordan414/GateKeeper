@@ -136,12 +136,14 @@ def register_user():
 # User Login
 def login_user():
     username = input("Enter your username: ")
+    key = getpass.getpass("Enter your secret key: ")
     password = getpass.getpass("Enter your password: ")
 
     # Find the user in the database
     user = accounts_collection.find_one({"username": username})
+    key_collection = accounts_collection.find_one({"key": key})
 
-    if user and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
+    if user and key_collection and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
         print("Login successful.")
         return True
     else:
