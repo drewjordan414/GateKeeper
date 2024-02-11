@@ -79,6 +79,7 @@ def show_connection():
     print("Connected to database successfully.")  # Move t
 
 def print_ascii_frame():
+    # print ascii art of "GateKeeper" in binary
     ascii_art = """
     your secrets are safe with
     ╔═════════════════════════════════════════════════════════╗
@@ -107,21 +108,21 @@ def print_calling_card():
 
 
 # User Registration
-def register_user():
-    username = input("Enter a new username: ")
-    password = getpass.getpass("Enter a new password: ")
+# def register_user():
+#     username = input("Enter a new username: ")
+#     password = getpass.getpass("Enter a new password: ")
 
-    # Check if the username already exists
-    if accounts_collection.find_one({"username": username}):
-        print("Username already exists. Please choose a different username.")
-        return
+#     # Check if the username already exists
+#     if accounts_collection.find_one({"username": username}):
+#         print("Username already exists. Please choose a different username.")
+#         return
 
-    # Hash the password
-    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+#     # Hash the password
+#     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-    # Store the new user
-    accounts_collection.insert_one({"username": username, "password": hashed})
-    print("User registered successfully.")
+#     # Store the new user
+#     accounts_collection.insert_one({"username": username, "password": hashed})
+#     print("User registered successfully.")
 
 # User Login
 def login_user():
@@ -143,15 +144,21 @@ def main():
     show_connection()
     print_ascii_frame()
     print_calling_card()
-    while True:
-        choice = input("Enter 1 to register, 2 to login: ")
-        if choice == "1":
-            register_user()
-        elif choice == "2":
-            if login_user():
-                break
-        else:
-            print("Invalid choice. Please try again.")
+    choice = input("Press 2 ro login: ")
+    if choice == "2":
+        if login_user():
+            print("Login successful.")
+    else:
+        print("Invalid choice. Please try again.")
+    # while True:
+    #     choice = input("Enter 1 to register, 2 to login: ")
+    #     if choice == "1":
+    #         register_user()
+    #     elif choice == "2":
+    #         if login_user():
+    #             break
+    #     else:
+    #         print("Invalid choice. Please try again.")
 
     # Menu for account management
     while True:
