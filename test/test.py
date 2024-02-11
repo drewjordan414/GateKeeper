@@ -31,7 +31,7 @@ def decrypt_password(encrypted_password: str, key: bytes) -> str:
     return cipher_suite.decrypt(encrypted_password.encode()).decode()
 
 # Make er Perty
-def animated_ascii_art(text, delay=0.1):
+def animated_ascii_art(text, delay=0.6):
     f = Figlet(font='slant')
     result = f.renderText(text)
     for char in result:
