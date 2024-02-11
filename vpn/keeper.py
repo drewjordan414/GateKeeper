@@ -47,6 +47,22 @@ def display_table(data, fields):
     print(table)
 
 
+def print_calling_card():
+    turtle = (
+        "|-------------------------|\n"
+        "|                   __    |\n"
+        "|        .,-;-;-,. /'_\   |\n"
+        "|      _/_/_/_|_\_\) /    |\n"
+        "|    '-<_><_><_><_>=/\    |\n"
+        "|      `/_/====/_/-'\_\   |\n"
+        "|       ""     ""    ""   | \n"
+        "|github.com/drewjordan414 |\n"
+        "|-------------------------|\n"
+
+    )
+    print(turtle)
+
+
 # User Registration
 def register_user():
     username = input("Enter a new username: ")
@@ -82,6 +98,7 @@ def login_user():
 # Main function
 def main():
     animated_ascii_art('GateKeeper')
+    print_calling_card()
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
