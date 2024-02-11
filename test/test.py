@@ -67,6 +67,8 @@ def display_table(data, fields):
         table.add_row(row)
     print(table)
 
+accounts_collection = db_connection()
+passwords_collection = db_connection()
 
 def print_calling_card():
     turtle = (
@@ -90,7 +92,7 @@ def register_user():
     password = getpass.getpass("Enter a new password: ")
 
     # Check if the username already exists
-    if db_connection.accounts_collection.find_one({"username": username}):
+    if accounts_collection.find_one({"username": username}):
         print("Username already exists. Please choose a different username.")
         return
 
@@ -98,7 +100,7 @@ def register_user():
     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     # Store the new user
-    db_connection.accounts_collection.insert_one({"username": username, "password": hashed})
+    accounts_collection.insert_one({"username": username, "password": hashed})
     print("User registered successfully.")
 
 # User Login
@@ -107,7 +109,7 @@ def login_user():
     password = getpass.getpass("Enter your password: ")
 
     # Find the user in the database
-    user = db_connection.accounts_collection.find_one({"username": username})
+    user = accounts_collection.find_one({"username": username})
 
     if user and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
         print("Login successful.")
@@ -120,7 +122,7 @@ def login_user():
 def main():
     animated_ascii_art('GateKeeper')
     print_calling_card()
-    show_db_connection()
+    show_db_connection
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
@@ -148,14 +150,14 @@ def main():
             # Generate a unique key for this account
             account_key = Fernet.generate_key()
             encrypted_password = encrypt_password(password, account_key)
-            db_connection.passwords_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
+            passwords_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
             print("Account added successfully.")
         
         elif choice == "2":
             # View account
             name = input("Enter the name of the account: ").lower()  # Convert input to lowercase
             # Find account using a case-insensitive search
-            account = db_connection.passwords_collection.find_one({"name": {"$regex": f"^{name}$", "$options": "i"}})
+            account = passwords_collection.find_one({"name": {"$regex": f"^{name}$", "$options": "i"}})
             if account:
                 decrypted_password = decrypt_password(account['password'], account['key'])
                 # Displaying the result in a table
@@ -167,11 +169,11 @@ def main():
         elif choice == "3":
             # Delete account
             name = input("Enter the name of the account: ")
-            db_connection.passwords_collection.delete_one({"name": name})
+            passwords_collection.delete_one({"name": name})
             print("Account deleted successfully!")
         elif choice == "4":
             # View all accounts
-            accounts = db_connection.passwords_collection.find()
+            accounts = passwords_collection.find()
             account_data = []
             for account in accounts:
                 decrypted_password = decrypt_password(account['password'], account['key'])
