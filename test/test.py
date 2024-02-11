@@ -127,6 +127,20 @@ def register_user():
     print("User registered successfully.")
 
 # User Login
+# def login_user():
+#     username = input("Enter your username: ")
+#     secret_key = getpass.getpass("Enter your secret key: ")
+#     password = getpass.getpass("Enter your password: ")
+
+#     # Find the user in the database
+#     user = accounts_collection.find_one({"username": username})
+
+#     if user and bcrypt.checkpw(secret_key.encode('utf-8'), user["secret_key"]) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
+#         print("Login successful.")
+#         return True
+#     else:
+#         print("Invalid username, secret key, or password.")
+#         return False
 def login_user():
     username = input("Enter your username: ")
     secret_key = getpass.getpass("Enter your secret key: ")
@@ -135,13 +149,18 @@ def login_user():
     # Find the user in the database
     user = accounts_collection.find_one({"username": username})
 
-    if user and bcrypt.checkpw(secret_key.encode('utf-8'), user["secret_key"]) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
-        print("Login successful.")
-        return True
+    if user:
+        # Check if secret_key field exists
+        user_secret_key = user.get("secret_key")
+        if user_secret_key and bcrypt.checkpw(secret_key.encode('utf-8'), user_secret_key) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
+            print("Login successful.")
+            return True
+        else:
+            print("Invalid username, secret key, or password.")
+            return False
     else:
-        print("Invalid username, secret key, or password.")
+        print("User not found.")
         return False
-    
     
 # Main function
 def main():
