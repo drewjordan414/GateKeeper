@@ -1,1 +1,3 @@
+#all envs
 *.env
+envs/
