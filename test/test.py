@@ -151,20 +151,6 @@ def register_user():
 
 # User Login
 # def login_user():
-#     username = input("Enter your username: ")
-#     secret_key = getpass.getpass("Enter your secret key: ")
-#     password = getpass.getpass("Enter your password: ")
-
-#     # Find the user in the database
-#     user = accounts_collection.find_one({"username": username})
-
-#     if user and bcrypt.checkpw(secret_key.encode('utf-8'), user["secret_key"]) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
-#         print("Login successful.")
-#         return True
-#     else:
-#         print("Invalid username, secret key, or password.")
-#         return False
-# def login_user():
 #     global current_user_accounts_collection
 #     username = input("Enter your username: ")
 #     secret_key = getpass.getpass("Enter your secret key: ")
@@ -187,7 +173,10 @@ def register_user():
 #         return False
 def login_user():
     global current_user_accounts_collection  # Declare the global variable
-    db = db_connection()
+    
+    # Correctly unpack the returned values from db_connection()
+    db, accounts_collection, _ = db_connection()
+    
     username = input("Enter your username: ")
     secret_key = getpass.getpass("Enter your secret key: ")
     password = getpass.getpass("Enter your password: ")
@@ -201,7 +190,7 @@ def login_user():
         if user_secret_key and bcrypt.checkpw(secret_key.encode('utf-8'), user_secret_key) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
             print("Login successful.")
             
-            # Set the current user's accounts collection
+            # Set the current user's accounts collection using the correct db object
             current_user_accounts_collection = db[f"{username}_accounts"]
             return True
         else:
@@ -210,6 +199,7 @@ def login_user():
     else:
         print("User not found.")
         return False
+
     
 def add_account():
     if current_user_accounts_collection is None:
