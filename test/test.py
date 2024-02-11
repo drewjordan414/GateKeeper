@@ -48,7 +48,7 @@ def display_table(data, fields):
 
 
 def print_calling_card():
-    ascii_drawing = (
+    turtle = (
         "|-------------------------|\n"
         "|                   __    |\n"
         "|        .,-;-;-,. /'_\   |\n"
@@ -60,7 +60,7 @@ def print_calling_card():
         "|-------------------------|\n"
 
     )
-    print(print_calling_card)
+    print(turtle)
 
 
 # User Registration
