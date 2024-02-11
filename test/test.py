@@ -122,7 +122,7 @@ def login_user():
 def main():
     animated_ascii_art('GateKeeper')
     print_calling_card()
-    show_db_connection
+    show_db_connection()
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
