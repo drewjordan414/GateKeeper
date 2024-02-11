@@ -144,10 +144,14 @@ def main():
 
         elif choice == "3":
             # Delete account
-            name = input("Enter the name of the account: ").lower()
-            account = passwords_collection.find_one({"name": {"$regex": f"^{name}$", "$options": "i"}})  # Convert input to lowercase
-            accounts.delete_one({"name": name})
-            print("Account deleted successfully!")
+            name = input("Enter the name of the account: ")
+            # Perform a case-insensitive search to find the account
+            account = passwords_collection.find_one({"name": {"$regex": f"^{name}$", "$options": "i"}})
+            if account:
+                passwords_collection.delete_one({"name": {"$regex": f"^{name}$", "$options": "i"}})
+                print("Account deleted successfully!")
+            else:
+                print("Account not found.")
         elif choice == "4":
             # View all accounts
             accounts = passwords_collection.find()
