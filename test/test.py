@@ -63,29 +63,14 @@ def main():
     while True:
         choice = input("Enter 1 to register, 2 to login: ")
         if choice == "1":
-            # Add account
-            name = input("Enter the name of the account: ")
-            email = input("Enter the email of the account: ")
-            password = input("Enter the password: ")
-            # Generate a unique key for this account
-            account_key = Fernet.generate_key()
-            encrypted_password = encrypt_password(password, account_key)
-            passwords_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
-            print("Account added successfully.")
-
+            register_user()
         elif choice == "2":
-            # View account
-            name = input("Enter the name of the account: ")
-            account = passwords_collection.find_one({"name": name})
-            if account:
-                decrypted_password = decrypt_password(account['password'], account['key'])
-                print(f"Email: {account['email']}, Password: {decrypted_password}")
-            else:
-                print("Account not found.")
+            if login_user():
                 break
-        
+        else:
+            print("Invalid choice. Please try again.")
 
-    # Menu
+    # Menu for account management
     while True:
         print("1. Add an Account")
         print("2. View accounts")
@@ -99,15 +84,17 @@ def main():
             name = input("Enter the name of the account: ")
             email = input("Enter the email of the account: ")
             password = input("Enter the password: ")
-            encrypted_password = encrypt_password(password)
-            passwords_collection.insert_one({"name": name, "email": email, "password": encrypted_password})
+            # Generate a unique key for this account
+            account_key = Fernet.generate_key()
+            encrypted_password = encrypt_password(password, account_key)
+            passwords_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
             print("Account added successfully.")
         elif choice == "2":
             # View account
             name = input("Enter the name of the account: ")
             account = passwords_collection.find_one({"name": name})
             if account:
-                decrypted_password = decrypt_password(account['password'])
+                decrypted_password = decrypt_password(account['password'], account['key'])
                 print(f"Email: {account['email']}, Password: {decrypted_password}")
             else:
                 print("Account not found.")
@@ -120,7 +107,7 @@ def main():
             # View all accounts
             accounts = passwords_collection.find()
             for account in accounts:
-                decrypted_password = decrypt_password(account['password'])
+                decrypted_password = decrypt_password(account['password'], account['key'])
                 print(f"Name: {account['name']}, Email: {account['email']}, Password: {decrypted_password}")
         elif choice == "5":
             # Logout
