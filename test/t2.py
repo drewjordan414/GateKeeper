@@ -206,6 +206,46 @@ def view_all_accounts():
     else:
         print("No accounts found.")
 
+# Add a function to add a Bitcoin account with wallet address and private key
+def add_bitcoin_account():
+    if current_user_accounts_collection is None:
+        print("You must be logged in to add a Bitcoin account.")
+        return
+
+    wallet_user_login = input("Enter the wallet user login: ")
+    wallet_password = getpass.getpass("Enter the wallet password: ")
+    recovery_phrase = getpass.getpass("Enter the 12-word recovery phrase: ")
+
+    account_key = Fernet.generate_key()
+    encrypted_password = encrypt_password(wallet_password, account_key)
+    encrypted_recovery_phrase = encrypt_password(recovery_phrase, account_key)
+
+    current_user_accounts_collection.insert_one({
+        "wallet_user_login": wallet_user_login, 
+        "wallet_password": encrypted_password, 
+        "recovery_phrase": encrypted_recovery_phrase, 
+        "key": account_key
+    })
+    print("Bitcoin account added successfully.")
+
+def view_bitcoin_accounts():
+    if current_user_accounts_collection is None:
+        print("You must be logged in to view Bitcoin accounts.")
+        return
+
+    accounts = current_user_accounts_collection.find()
+    account_data = []
+    for account in accounts:
+        if 'wallet_user_login' in account:  # Check if it's a bitcoin account
+            decrypted_password = decrypt_password(account['wallet_password'], account['key'])
+            decrypted_recovery_phrase = decrypt_password(account['recovery_phrase'], account['key'])
+            account_data.append([account['wallet_user_login'], decrypted_password, decrypted_recovery_phrase])
+
+    if account_data:
+        display_table(account_data, ["Wallet User Login", "Wallet Password", "Recovery Phrase"])
+    else:
+        print("No Bitcoin accounts found.")
+
 # Main function
 def main():
     show_connection()
@@ -235,8 +275,10 @@ def main():
                 print("2. View Accounts")
                 print("3. Delete an Account")
                 print("4. View All Accounts")
-                print("5. Logout")
-                print("6. Exit")
+                print("5. Add Bitcoin Account")
+                print("6. View Bitcoin Accounts")
+                print("7. Logout")
+                print("8. Exit")
                 choice = input("Enter your choice: ")
                 
                 if choice == "1":
@@ -248,10 +290,14 @@ def main():
                 elif choice == "4":
                     view_all_accounts()  # Implement this function
                 elif choice == "5":
+                    add_bitcoin_account()
+                elif choice == "6":
+                    view_bitcoin_accounts()
+                elif choice == "7":
                     logout_user()
                     logged_in = False
                     break
-                elif choice == "6":
+                elif choice == "8":
                     ending_connection()
                 else:
                     print("Invalid choice. Please try again.")
