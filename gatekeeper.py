@@ -159,21 +159,40 @@ def add_account():
     current_user_accounts_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
     print("Account added successfully.")
 
+# def view_accounts():
+#     if current_user_accounts_collection is None:
+#         print("You must be logged in to view accounts.")
+#         return
+
+#     accounts = current_user_accounts_collection.find().lower()
+#     account_data = []
+#     for account in accounts:
+#         decrypted_password = decrypt_password(account['password'], account['key'])
+#         account_data.append([account['name'], account['email'], decrypted_password])
+
+#     if account_data:
+#         display_table(account_data, ["Name", "Email", "Password"])
+#     else:
+#         print("No accounts found.")
 def view_accounts():
     if current_user_accounts_collection is None:
         print("You must be logged in to view accounts.")
         return
 
+    search_query = input("Enter the name of the account to search for: ").lower()
     accounts = current_user_accounts_collection.find()
     account_data = []
     for account in accounts:
-        decrypted_password = decrypt_password(account['password'], account['key'])
-        account_data.append([account['name'], account['email'], decrypted_password])
+        # Compare lowercased account name with the search query
+        if account['name'].lower() == search_query:
+            decrypted_password = decrypt_password(account['password'], account['key'])
+            account_data.append([account['name'], account['email'], decrypted_password])
 
     if account_data:
         display_table(account_data, ["Name", "Email", "Password"])
     else:
         print("No accounts found.")
+
 
 def delete_account():
     if current_user_accounts_collection is None:
