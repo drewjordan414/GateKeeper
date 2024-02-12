@@ -57,7 +57,7 @@ def print_calling_card():
 
     )
     print(turtle)
-    
+
 def db_connection():
     # Database connection
     MONGO_URL = getenv("MONGO_URL")
@@ -189,10 +189,11 @@ def view_all_accounts():
     accounts = current_user_accounts_collection.find()
     account_data = []
     for account in accounts:
-        account_data.append([account['name'], account['email']])  # Passwords should not be displayed here
+        decrypted_password = decrypt_password(account['password'], account['key'])
+        account_data.append([account['name'], account['email'], decrypted_password])
 
     if account_data:
-        display_table(account_data, ["Name", "Email"])
+        display_table(account_data, ["Name", "Email", "Password"])
     else:
         print("No accounts found.")
 
