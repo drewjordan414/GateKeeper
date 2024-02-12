@@ -213,6 +213,7 @@ def add_bitcoin_account():
         return
 
     wallet_name = input("Enter the wallet name: ")
+    wallet_name_lower = wallet_name.lower()  # Store the lowercase version
     wallet_user_login = input("Enter the wallet user login: ")
     wallet_password = getpass.getpass("Enter the wallet password: ")
     recovery_phrase = input("Enter the 12-word recovery phrase: ")
@@ -223,6 +224,7 @@ def add_bitcoin_account():
 
     current_user_accounts_collection.insert_one({
         "wallet_name": wallet_name,
+        "wallet_name_lower": wallet_name_lower,  # Store the lowercase name
         "wallet_user_login": wallet_user_login, 
         "wallet_password": encrypted_password, 
         "recovery_phrase": encrypted_recovery_phrase, 
@@ -247,6 +249,19 @@ def view_bitcoin_accounts():
         display_table(account_data, ["Wallet User Login", "Wallet Password", "Recovery Phrase"])
     else:
         print("No Bitcoin accounts found.")
+
+def delete_bitcoin_account():
+    if current_user_accounts_collection is None:
+        print("You must be logged in to delete a Bitcoin account.")
+        return
+
+    wallet_name = input("Enter the wallet name to delete: ").lower()  # Convert input to lowercase
+    result = current_user_accounts_collection.delete_one({"wallet_name_lower": wallet_name})
+
+    if result.deleted_count > 0:
+        print("Bitcoin account deleted successfully.")
+    else:
+        print("No such Bitcoin account found.")
 
 # Main function
 def main():
@@ -279,8 +294,9 @@ def main():
                 print("4. View All Accounts")
                 print("5. Add Bitcoin Account")
                 print("6. View Bitcoin Accounts")
-                print("7. Logout")
-                print("8. Exit")
+                print("7. Remove Bitcoin Account")
+                print("8. Logout")
+                print("9. Exit")
                 choice = input("Enter your choice: ")
                 
                 if choice == "1":
@@ -296,10 +312,12 @@ def main():
                 elif choice == "6":
                     view_bitcoin_accounts()
                 elif choice == "7":
+                    delete_bitcoin_account()
+                elif choice == "8":
                     logout_user()
                     logged_in = False
                     break
-                elif choice == "8":
+                elif choice == "9":
                     ending_connection()
                 else:
                     print("Invalid choice. Please try again.")
