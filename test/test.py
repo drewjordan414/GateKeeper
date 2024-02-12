@@ -106,8 +106,6 @@ def print_ascii_frame():
     print(ascii_art)
 
 
-# To use the function, just call it
-
 def print_calling_card():
     turtle = (
         "|-------------------------|\n"
