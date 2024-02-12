@@ -38,7 +38,7 @@ def ending_connection():
         sys.stdout.write(".")
         sys.stdout.flush()
         time.sleep(0.6)  
-    print("Ended connection to database successfully. Goodbye.")  
+    print("n\Connection to database ended successfully. Goodbye.")  
     sys.exit()
 
 def print_ascii_frame():
