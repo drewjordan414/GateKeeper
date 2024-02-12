@@ -192,11 +192,14 @@ def login_user():
     else:
         print("User not found.")
         return False
-
-
-
-
     
+def logout_user():
+    global current_user_accounts_collection
+    current_user_accounts_collection = None
+    print("Logged out successfully.")
+
+
+# Account Management
 def add_account():
     if current_user_accounts_collection is None:
         print("You must be logged in to add an account.")
@@ -230,28 +233,25 @@ def view_accounts():
         print("No accounts found.")
 
 
+
 # Main function
 def main():
     show_connection()
     print_ascii_frame()
     print_calling_card()
-    # choice = input("Press 2 to login: ")
-    # if choice == "2":
-    #     if login_user():
-    #         print("Login successful.")
-    # else:
-    #     print("Invalid choice. Please try again.")
     while True:
-        choice = input("Enter 1 to register, 2 to login or 3 to view accounts: ")
+        print("1. Add an Account")
+        print("2. View Accounts")
+        print("3. Logout")
+        choice = input("Enter your choice: ")
+        
         if choice == "1":
-            if register_user():
-                login_user()  # Auto login after registration
-                add_account()
+            add_account()
         elif choice == "2":
-            if login_user():
-                break
-        elif choice == "3":
             view_accounts()
+        elif choice == "3":
+            logout_user()
+            break
         else:
             print("Invalid choice. Please try again.")
 
