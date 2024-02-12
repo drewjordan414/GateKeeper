@@ -243,12 +243,13 @@ def view_bitcoin_accounts():
         if 'wallet_user_login' in account:  # Check if it's a bitcoin account
             decrypted_password = decrypt_password(account['wallet_password'], account['key'])
             decrypted_recovery_phrase = decrypt_password(account['recovery_phrase'], account['key'])
-            account_data.append([account['wallet_user_login'], decrypted_password, decrypted_recovery_phrase])
+            account_data.append([account['wallet_name'], account['wallet_user_login'], decrypted_password, decrypted_recovery_phrase])
 
     if account_data:
-        display_table(account_data, ["Wallet User Login", "Wallet Password", "Recovery Phrase"])
+        display_table(account_data, ["Wallet Name", "Wallet User Login", "Wallet Password", "Recovery Phrase"])
     else:
         print("No Bitcoin accounts found.")
+
 
 def delete_bitcoin_account():
     if current_user_accounts_collection is None:
@@ -283,6 +284,7 @@ def main():
             elif choice == "2":
                 logged_in = login_user()
             elif choice == "3":
+                ending_connection()
                 break
             else:
                 print("Invalid choice. Please try again.")
