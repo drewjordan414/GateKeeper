@@ -212,15 +212,17 @@ def add_bitcoin_account():
         print("You must be logged in to add a Bitcoin account.")
         return
 
+    wallet_name = input("Enter the wallet name: ")
     wallet_user_login = input("Enter the wallet user login: ")
     wallet_password = getpass.getpass("Enter the wallet password: ")
-    recovery_phrase = getpass.getpass("Enter the 12-word recovery phrase: ")
+    recovery_phrase = input("Enter the 12-word recovery phrase: ")
 
     account_key = Fernet.generate_key()
     encrypted_password = encrypt_password(wallet_password, account_key)
     encrypted_recovery_phrase = encrypt_password(recovery_phrase, account_key)
 
     current_user_accounts_collection.insert_one({
+        "wallet_name": wallet_name,
         "wallet_user_login": wallet_user_login, 
         "wallet_password": encrypted_password, 
         "recovery_phrase": encrypted_recovery_phrase, 
