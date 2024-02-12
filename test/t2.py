@@ -26,11 +26,19 @@ def decrypt_password(encrypted_password: str, key: bytes) -> str:
 
 def show_connection():
     print("Connecting to the database", end="")
-    for _ in range(5):  # You can adjust the number of dots here
+    for _ in range(5):  
         sys.stdout.write(".")
         sys.stdout.flush()
-        time.sleep(0.6)  # Adjust this for timing between dots (total of 3 seconds delay)
-    print("Connected to database successfully.")  # Move t
+        time.sleep(0.6)  
+    print("Connected to database successfully.")  
+
+def ending_connection():
+    print("Ending connection to the database", end="")
+    for _ in range(5):  
+        sys.stdout.write(".")
+        sys.stdout.flush()
+        time.sleep(0.6)  
+    print("Ended connection to database successfully. Goodbye.")  
 
 def print_ascii_frame():
     # print ascii art of "GateKeeper" in binary
