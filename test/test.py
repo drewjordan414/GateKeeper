@@ -182,10 +182,8 @@ def login_user():
 
     user = user_accounts_collection.find_one({"username": username})
     if user:
-        # Check if secret_key and password are correct
         if bcrypt.checkpw(secret_key.encode('utf-8'), user["secret_key"]) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
             print("Login successful.")
-            # Access or create the specific user's collection for account details
             current_user_accounts_collection = db[f"{username}_accounts"]
             return True
         else:
@@ -194,6 +192,7 @@ def login_user():
     else:
         print("User not found.")
         return False
+
 
 
     
@@ -228,6 +227,7 @@ def view_accounts():
         display_table(account_data, ["Name", "Email", "Password"])
     else:
         print("No accounts found.")
+
 
 # Main function
 def main():
