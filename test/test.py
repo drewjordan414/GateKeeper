@@ -172,7 +172,7 @@ def register_user():
 #         print("User not found.")
 #         return False
 def login_user():
-    global current_user_accounts_collection  # Declare the global variable
+    global current_user_accounts_collection
     
     db, user_accounts_collection, _ = db_connection()
     
@@ -192,6 +192,7 @@ def login_user():
     else:
         print("User not found.")
         return False
+
 
 
 
