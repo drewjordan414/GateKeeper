@@ -185,7 +185,8 @@ def login_user():
         # Check if secret_key and password are correct
         if bcrypt.checkpw(secret_key.encode('utf-8'), user["secret_key"]) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
             print("Login successful.")
-            current_user_accounts_collection = db.get_collection(f"{username}_accounts", create=True)
+            # Access or create the specific user's collection for account details
+            current_user_accounts_collection = db[f"{username}_accounts"]
             return True
         else:
             print("Invalid secret key or password.")
@@ -193,6 +194,7 @@ def login_user():
     else:
         print("User not found.")
         return False
+
 
     
 def add_account():
