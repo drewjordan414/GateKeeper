@@ -39,6 +39,7 @@ def ending_connection():
         sys.stdout.flush()
         time.sleep(0.6)  
     print("Ended connection to database successfully. Goodbye.")  
+    sys.exit()
 
 def print_ascii_frame():
     # print ascii art of "GateKeeper" in binary
@@ -235,6 +236,7 @@ def main():
                 print("3. Delete an Account")
                 print("4. View All Accounts")
                 print("5. Logout")
+                print("6. Exit")
                 choice = input("Enter your choice: ")
                 
                 if choice == "1":
@@ -249,6 +251,8 @@ def main():
                     logout_user()
                     logged_in = False
                     break
+                elif choice == "6":
+                    ending_connection()
                 else:
                     print("Invalid choice. Please try again.")
 
