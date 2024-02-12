@@ -241,9 +241,10 @@ def view_bitcoin_accounts():
     account_data = []
     for account in accounts:
         if 'wallet_user_login' in account:  # Check if it's a bitcoin account
+            wallet_name = account.get('wallet_name', 'N/A')  # Use 'N/A' if 'wallet_name' does not exist
             decrypted_password = decrypt_password(account['wallet_password'], account['key'])
             decrypted_recovery_phrase = decrypt_password(account['recovery_phrase'], account['key'])
-            account_data.append([account['wallet_name'], account['wallet_user_login'], decrypted_password, decrypted_recovery_phrase])
+            account_data.append([wallet_name, account['wallet_user_login'], decrypted_password, decrypted_recovery_phrase])
 
     if account_data:
         display_table(account_data, ["Wallet Name", "Wallet User Login", "Wallet Password", "Recovery Phrase"])
