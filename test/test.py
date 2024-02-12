@@ -126,21 +126,24 @@ def print_calling_card():
 
 # User Registration
 def register_user():
-    db, accounts_collection, _ = db_connection()
+    db, _, _ = db_connection()  # We don't need accounts_collection or passwords_collection here
+
+    # Access or create the User_Accounts collection
+    user_accounts_collection = db["User_Accounts"]
 
     username = input("Enter a new username: ")
     secret_key = getpass.getpass("Enter your secret key: ")
     password = getpass.getpass("Enter a new password: ")
 
-    if accounts_collection.find_one({"username": username}):
+    if user_accounts_collection.find_one({"username": username}):
         print("Username already exists. Please choose a different username.")
         return False
 
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     hashed_secret_key = bcrypt.hashpw(secret_key.encode('utf-8'), bcrypt.gensalt())
 
-    accounts_collection.insert_one({"username": username, "password": hashed_password, "secret_key": hashed_secret_key})
-    db.create_collection(f"{username}_accounts")
+    user_accounts_collection.insert_one({"username": username, "password": hashed_password, "secret_key": hashed_secret_key})
+    # Remove the creation of a specific collection here as it will be created when the user adds an account
     print("User registered successfully.")
     return True
 
@@ -171,27 +174,21 @@ def register_user():
 def login_user():
     global current_user_accounts_collection  # Declare the global variable
     
-    # Correctly unpack the returned values from db_connection()
-    db, accounts_collection, _ = db_connection()
+    db, user_accounts_collection, _ = db_connection()
     
     username = input("Enter your username: ")
     secret_key = getpass.getpass("Enter your secret key: ")
     password = getpass.getpass("Enter your password: ")
 
-    # Find the user in the database
-    user = accounts_collection.find_one({"username": username})
-
+    user = user_accounts_collection.find_one({"username": username})
     if user:
-        # Check if secret_key field exists
-        user_secret_key = user.get("secret_key")
-        if user_secret_key and bcrypt.checkpw(secret_key.encode('utf-8'), user_secret_key) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
+        # Check if secret_key and password are correct
+        if bcrypt.checkpw(secret_key.encode('utf-8'), user["secret_key"]) and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
             print("Login successful.")
-            
-            # Set the current user's accounts collection using the correct db object
-            current_user_accounts_collection = db[f"{username}_accounts"]
+            current_user_accounts_collection = db.get_collection(f"{username}_accounts", create=True)
             return True
         else:
-            print("Invalid username, secret key, or password.")
+            print("Invalid secret key or password.")
             return False
     else:
         print("User not found.")
@@ -207,11 +204,10 @@ def add_account():
     email = input("Enter the email of the account: ")
     password = input("Enter the password: ")
 
-    # Generate a unique key for this account
     account_key = Fernet.generate_key()
     encrypted_password = encrypt_password(password, account_key)
 
-    # Insert the account into the current user's accounts collection
+    # Insert the account into the current user's specific collection
     current_user_accounts_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
     print("Account added successfully.")
 
