@@ -329,15 +329,15 @@ def user_menu():
 def main_menu():
     while True:
         print_main_menu()
-        choice = input("Enter your choice (or 'exit' to quit): ")
+        choice = input("Enter your choice: ")
 
         if choice == "1":
             register_user()
         elif choice == "2":
             if login_user():
                 user_menu()
-        elif choice == "3" or choice.lower() == "exit":
-            print("Exiting program. Goodbye!")
+        elif choice == "3" or choice.lower():
+            ending_connection()
             break
         else:
             print("Invalid choice. Please try again.")
