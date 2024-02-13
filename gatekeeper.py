@@ -159,40 +159,21 @@ def add_account():
     current_user_accounts_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
     print("Account added successfully.")
 
-# def view_accounts():
-#     if current_user_accounts_collection is None:
-#         print("You must be logged in to view accounts.")
-#         return
-
-#     accounts = current_user_accounts_collection.find().lower()
-#     account_data = []
-#     for account in accounts:
-#         decrypted_password = decrypt_password(account['password'], account['key'])
-#         account_data.append([account['name'], account['email'], decrypted_password])
-
-#     if account_data:
-#         display_table(account_data, ["Name", "Email", "Password"])
-#     else:
-#         print("No accounts found.")
-def view_accounts():
+def search_accounts():
     if current_user_accounts_collection is None:
         print("You must be logged in to view accounts.")
         return
 
-    search_query = input("Enter the name of the account to search for: ").lower()
     accounts = current_user_accounts_collection.find()
     account_data = []
     for account in accounts:
-        # Compare lowercased account name with the search query
-        if account['name'].lower() == search_query:
-            decrypted_password = decrypt_password(account['password'], account['key'])
-            account_data.append([account['name'], account['email'], decrypted_password])
+        decrypted_password = decrypt_password(account['password'], account['key'])
+        account_data.append([account['name'], account['email'], decrypted_password])
 
     if account_data:
         display_table(account_data, ["Name", "Email", "Password"])
     else:
         print("No accounts found.")
-
 
 def delete_account():
     if current_user_accounts_collection is None:
@@ -213,17 +194,77 @@ def view_all_accounts():
         print("You must be logged in to view all accounts.")
         return
 
-    # Placeholder logic for viewing all accounts
     accounts = current_user_accounts_collection.find()
     account_data = []
     for account in accounts:
-        decrypted_password = decrypt_password(account['password'], account['key'])
-        account_data.append([account['name'], account['email'], decrypted_password])
+        if 'password' in account and 'key' in account:  # Check if account is a regular account with password and key fields
+            decrypted_password = decrypt_password(account['password'], account['key'])
+            account_data.append([account['name'], account['email'], decrypted_password])
 
     if account_data:
         display_table(account_data, ["Name", "Email", "Password"])
     else:
-        print("No accounts found.")
+        print("No regular accounts found.")
+
+
+# Add a function to add a Bitcoin account with wallet address and private key
+def add_bitcoin_account():
+    if current_user_accounts_collection is None:
+        print("You must be logged in to add a Bitcoin account.")
+        return
+
+    wallet_name = input("Enter the wallet name: ")
+    wallet_name_lower = wallet_name.lower()  # Store the lowercase version
+    wallet_user_login = input("Enter the wallet user login: ")
+    wallet_password = getpass.getpass("Enter the wallet password: ")
+    recovery_phrase = input("Enter the 12-word recovery phrase: ")
+
+    account_key = Fernet.generate_key()
+    encrypted_password = encrypt_password(wallet_password, account_key)
+    encrypted_recovery_phrase = encrypt_password(recovery_phrase, account_key)
+
+    current_user_accounts_collection.insert_one({
+        "wallet_name": wallet_name,
+        "wallet_name_lower": wallet_name_lower,  # Store the lowercase name
+        "wallet_user_login": wallet_user_login, 
+        "wallet_password": encrypted_password, 
+        "recovery_phrase": encrypted_recovery_phrase, 
+        "key": account_key
+    })
+    print("Bitcoin account added successfully.")
+
+def view_bitcoin_accounts():
+    if current_user_accounts_collection is None:
+        print("You must be logged in to view Bitcoin accounts.")
+        return
+
+    accounts = current_user_accounts_collection.find()
+    account_data = []
+    for account in accounts:
+        if 'wallet_user_login' in account:  # Check if it's a bitcoin account
+            wallet_name = account.get('wallet_name', 'N/A')  # Use 'N/A' if 'wallet_name' does not exist
+            decrypted_password = decrypt_password(account['wallet_password'], account['key'])
+            decrypted_recovery_phrase = decrypt_password(account['recovery_phrase'], account['key'])
+            account_data.append([wallet_name, account['wallet_user_login'], decrypted_password, decrypted_recovery_phrase])
+
+    if account_data:
+        display_table(account_data, ["Wallet Name", "Wallet User Login", "Wallet Password", "Recovery Phrase"])
+    else:
+        print("No Bitcoin accounts found.")
+
+
+def delete_bitcoin_account():
+    if current_user_accounts_collection is None:
+        print("You must be logged in to delete a Bitcoin account.")
+        return
+
+    wallet_name = input("Enter the wallet name to delete: ").lower()  # Convert input to lowercase
+    result = current_user_accounts_collection.delete_one({"wallet_name_lower": wallet_name})
+
+    if result.deleted_count > 0:
+        print("Bitcoin account deleted successfully.")
+    else:
+        print("No such Bitcoin account found.")
 
 # Main function
 def main():
@@ -245,6 +286,7 @@ def main():
             elif choice == "2":
                 logged_in = login_user()
             elif choice == "3":
+                ending_connection()
                 break
             else:
                 print("Invalid choice. Please try again.")
@@ -254,23 +296,32 @@ def main():
                 print("2. View Accounts")
                 print("3. Delete an Account")
                 print("4. View All Accounts")
-                print("5. Logout")
-                print("6. Exit")
+                print("5. Add Bitcoin Account")
+                print("6. View Bitcoin Accounts")
+                print("7. Remove Bitcoin Account")
+                print("8. Logout")
+                print("9. Exit")
                 choice = input("Enter your choice: ")
                 
                 if choice == "1":
                     add_account()
                 elif choice == "2":
-                    view_accounts()
+                    search_accounts()
                 elif choice == "3":
-                    delete_account()  # Implement this function
+                    delete_account()  
                 elif choice == "4":
-                    view_all_accounts()  # Implement this function
+                    view_all_accounts()  
                 elif choice == "5":
+                    add_bitcoin_account()
+                elif choice == "6":
+                    view_bitcoin_accounts()
+                elif choice == "7":
+                    delete_bitcoin_account()
+                elif choice == "8":
                     logout_user()
                     logged_in = False
                     break
-                elif choice == "6":
+                elif choice == "9":
                     ending_connection()
                 else:
                     print("Invalid choice. Please try again.")
