@@ -14,7 +14,7 @@ GateKeeper is a command-line interface (CLI) application for managing user accou
 - **Crytpo Account Storage**: Encrypts and decrypts account passwords using Fernet cryptography.
 
 ## MongoDB Integration
-GateKeeper uses MongoDB, a NoSQL database, for storing user data and account information. Ensure you have MongoDB installed and running on your server or local machine. You can find more information and installation instructions for MongoDB at GateKeeper uses MongoDB, a NoSQL database, for storing user data and account information. Ensure you have MongoDB installed and running on your server or local machine. You can find more information and installation instructions for MongoDB [here](https://docs.mongodb.com/manual/installation/). 
+GateKeeper uses MongoDB, a NoSQL database, for storing user data and account information. Ensure you have MongoDB installed and running on your server or local machine. You can find more information and installation instructions for MongoDB [here](https://docs.mongodb.com/manual/installation/). 
 
 ## Installation
 To install the necessary dependencies for GateKeeper, run the following command:
