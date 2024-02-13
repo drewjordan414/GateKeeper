@@ -30,7 +30,7 @@ def show_connection():
         sys.stdout.write(".")
         sys.stdout.flush()
         time.sleep(0.6)  
-    print("Connected to database successfully.")  
+    print("\nConnected to database successfully.")  
 
 def ending_connection():
     print("Ending connection to the database", end="")
