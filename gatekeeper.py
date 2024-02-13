@@ -271,67 +271,84 @@ def delete_bitcoin_account():
     else:
         print("No such Bitcoin account found.")
 
+def go_back(current_menu_function):
+    while True:
+        current_menu_function()
+        choice = input("Enter your choice (type 'back' to return to the previous menu): ")
+
+        if choice.lower() == 'back':
+            break
+
+def print_main_menu():
+    print("\nMain Menu")
+    print("1. Register")
+    print("2. Login")
+    print("3. Exit")
+
+def print_user_menu():
+    print("\nUser Menu")
+    print("1. Add an Account")
+    print("2. View Accounts")
+    print("3. Delete an Account")
+    print("4. View All Accounts")
+    print("5. Add Bitcoin Account")
+    print("6. View Bitcoin Accounts")
+    print("7. Remove Bitcoin Account")
+    print("8. Logout")
+
+def user_menu():
+    while True:
+        print_user_menu()
+        choice = input("Enter your choice (or 'back' to go back): ")
+
+        if choice == "1":
+            add_account()
+        elif choice == "2":
+            search_accounts()
+            go_back(print_user_menu)
+        elif choice == "3":
+            delete_account()
+        elif choice == "4":
+            view_all_accounts()
+            go_back(print_user_menu)
+        elif choice == "5":
+            add_bitcoin_account()
+        elif choice == "6":
+            view_bitcoin_accounts()
+            go_back(print_user_menu)
+        elif choice == "7":
+            delete_bitcoin_account()
+        elif choice == "8":
+            logout_user()
+            break
+        elif choice.lower() == "back":
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+def main_menu():
+    while True:
+        print_main_menu()
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            register_user()
+        elif choice == "2":
+            if login_user():
+                user_menu()
+        elif choice == "3" or choice.lower():
+            ending_connection()
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+
 # Main function
 def main():
     show_connection()
     print_ascii_frame()
     print_calling_card()
-
-    logged_in = False
-
-    while True:
-        if not logged_in:
-            print("1. Register")
-            print("2. Login")
-            print("3. Exit")
-            choice = input("Enter your choice: ")
-
-            if choice == "1":
-                register_user()
-            elif choice == "2":
-                logged_in = login_user()
-            elif choice == "3":
-                ending_connection()
-                break
-            else:
-                print("Invalid choice. Please try again.")
-        else:
-            while True:
-                print("1. Add an Account")
-                print("2. View Accounts")
-                print("3. Delete an Account")
-                print("4. View All Accounts")
-                print("5. Add Bitcoin Account")
-                print("6. View Bitcoin Accounts")
-                print("7. Remove Bitcoin Account")
-                print("8. Logout")
-                print("9. Exit")
-                choice = input("Enter your choice: ")
-                
-                if choice == "1":
-                    add_account()
-                elif choice == "2":
-                    search_accounts()
-                elif choice == "3":
-                    delete_account()  
-                elif choice == "4":
-                    view_all_accounts()  
-                elif choice == "5":
-                    add_bitcoin_account()
-                elif choice == "6":
-                    view_bitcoin_accounts()
-                elif choice == "7":
-                    delete_bitcoin_account()
-                elif choice == "8":
-                    logout_user()
-                    logged_in = False
-                    break
-                elif choice == "9":
-                    ending_connection()
-                else:
-                    print("Invalid choice. Please try again.")
-
-    print("Exited successfully.")
-
+    main_menu()
+    
 if __name__ == "__main__":
     main()
