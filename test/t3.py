@@ -271,6 +271,14 @@ def delete_bitcoin_account():
     else:
         print("No such Bitcoin account found.")
 
+def go_back(current_menu_function):
+    while True:
+        current_menu_function()
+        choice = input("Enter your choice (type 'back' to return to the previous menu): ")
+
+        if choice.lower() == 'back':
+            break
+
 def print_main_menu():
     print("\nMain Menu")
     print("1. Register")
@@ -297,14 +305,17 @@ def user_menu():
             add_account()
         elif choice == "2":
             search_accounts()
+            go_back(print_user_menu)
         elif choice == "3":
             delete_account()
         elif choice == "4":
             view_all_accounts()
+            go_back(print_user_menu)
         elif choice == "5":
             add_bitcoin_account()
         elif choice == "6":
             view_bitcoin_accounts()
+            go_back(print_user_menu)
         elif choice == "7":
             delete_bitcoin_account()
         elif choice == "8":
