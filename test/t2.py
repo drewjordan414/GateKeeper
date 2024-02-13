@@ -159,7 +159,7 @@ def add_account():
     current_user_accounts_collection.insert_one({"name": name, "email": email, "password": encrypted_password, "key": account_key})
     print("Account added successfully.")
 
-def view_accounts():
+def search_accounts():
     if current_user_accounts_collection is None:
         print("You must be logged in to view accounts.")
         return
@@ -194,17 +194,18 @@ def view_all_accounts():
         print("You must be logged in to view all accounts.")
         return
 
-    # Placeholder logic for viewing all accounts
     accounts = current_user_accounts_collection.find()
     account_data = []
     for account in accounts:
-        decrypted_password = decrypt_password(account['password'], account['key'])
-        account_data.append([account['name'], account['email'], decrypted_password])
+        if 'password' in account and 'key' in account:  # Check if account is a regular account with password and key fields
+            decrypted_password = decrypt_password(account['password'], account['key'])
+            account_data.append([account['name'], account['email'], decrypted_password])
 
     if account_data:
         display_table(account_data, ["Name", "Email", "Password"])
     else:
-        print("No accounts found.")
+        print("No regular accounts found.")
+
 
 # Add a function to add a Bitcoin account with wallet address and private key
 def add_bitcoin_account():
@@ -305,11 +306,11 @@ def main():
                 if choice == "1":
                     add_account()
                 elif choice == "2":
-                    view_accounts()
+                    search_accounts()
                 elif choice == "3":
-                    delete_account()  # Implement this function
+                    delete_account()  
                 elif choice == "4":
-                    view_all_accounts()  # Implement this function
+                    view_all_accounts()  
                 elif choice == "5":
                     add_bitcoin_account()
                 elif choice == "6":
