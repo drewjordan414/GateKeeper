@@ -164,16 +164,21 @@ def search_accounts():
         print("You must be logged in to view accounts.")
         return
 
+    search_query = input("Enter the name of the account to search for: ").lower()  # Convert the input to lowercase
+
     accounts = current_user_accounts_collection.find()
     account_data = []
     for account in accounts:
-        decrypted_password = decrypt_password(account['password'], account['key'])
-        account_data.append([account['name'], account['email'], decrypted_password])
+        # Convert account name to lowercase for case-insensitive comparison
+        if account['name'].lower() == search_query:
+            decrypted_password = decrypt_password(account['password'], account['key'])
+            account_data.append([account['name'], account['email'], decrypted_password])
 
     if account_data:
         display_table(account_data, ["Name", "Email", "Password"])
     else:
-        print("No accounts found.")
+        print(f"No accounts found with the name '{search_query}'.")
+
 
 def delete_account():
     if current_user_accounts_collection is None:
