@@ -3,11 +3,15 @@
 ## Description
 GateKeeper is a command-line interface (CLI) application for managing user accounts and passwords securely. It provides functionalities for user registration, login, and account management with encrypted password storage.
 
+![GateKeeper](./assets/example.png)
+
 ## Features
 - **User Registration**: Securely register new users.
 - **User Login**: Authenticate users with bcrypt password hashing.
 - **Account Management**: Add, view, and delete accounts with encrypted password storage using Fernet cryptography.
 - **Visually Appealing CLI**: Includes ASCII art and table formatted output for a better user experience.
+- **MongoDB Integration**: Uses MongoDB for storing user data and account information.
+- **Crytpo Account Storage**: Encrypts and decrypts account passwords using Fernet cryptography.
 
 ## MongoDB Integration
 GateKeeper uses MongoDB, a NoSQL database, for storing user data and account information. Ensure you have MongoDB installed and running on your server or local machine. You can find more information and installation instructions for MongoDB at GateKeeper uses MongoDB, a NoSQL database, for storing user data and account information. Ensure you have MongoDB installed and running on your server or local machine. You can find more information and installation instructions for MongoDB [here](https://docs.mongodb.com/manual/installation/). 
@@ -40,4 +44,6 @@ python gatekeeper.py
 ## UML Diagram
 The UML diagram below illustrates the class structure and relationships in the GateKeeper application.
 
-![Diagram](./gatekeeper.png)
+![Diagram](./assets/gatekeeper.png)
+
+
