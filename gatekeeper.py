@@ -305,17 +305,17 @@ def user_menu():
             add_account()
         elif choice == "2":
             search_accounts()
-            go_back(print_user_menu)
+            go_back(main_menu)
         elif choice == "3":
             delete_account()
         elif choice == "4":
             view_all_accounts()
-            go_back(print_user_menu)
+            go_back(main_menu)
         elif choice == "5":
             add_bitcoin_account()
         elif choice == "6":
             view_bitcoin_accounts()
-            go_back(print_user_menu)
+            go_back(main_menu)
         elif choice == "7":
             delete_bitcoin_account()
         elif choice == "8":
